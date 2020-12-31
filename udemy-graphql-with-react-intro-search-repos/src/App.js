@@ -1,3 +1,5 @@
+const GITHUB_TOKENS = process.env.REACT_APP_GITHUB_TOKEN;
+console.log({GITHUB_TOKENS});
 
 function App() {
   return (
