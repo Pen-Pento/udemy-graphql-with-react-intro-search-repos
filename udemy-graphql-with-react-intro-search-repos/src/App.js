@@ -14,13 +14,14 @@ const DEFAULT_STATE = {
 function App() {
   const [variables, setVariables] = useState(DEFAULT_STATE);
   const { query, first, last, before, after } = variables;
-  console.log({query})
+
   function handleChange(input) {
     setVariables({
       ...DEFAULT_STATE,
       query: input.target.value
     });
   }
+
   return (
     <ApolloProvider client={client}>
       <form>
@@ -35,8 +36,11 @@ function App() {
             if (loading) return 'Loading ...';
             if (error) return `Error! ${error.message}`;
 
-            console.log({data});
-            return <div></div>
+          const search = data.search;
+          const repositoryCount = search.repositoryCount;
+          const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories';
+          const title = `GitHub Repositories Search Results - ${repositoryCount} ${repositoryUnit}`;
+          return <h2>{title}</h2>
           }
         }
       </Query>
