@@ -1,28 +1,42 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { ApolloProvider, Query } from 'react-apollo';
 import client from './client';
-import gql from "graphql-tag";
+import { SEARCH_REPOSITORIES } from "./graphql";
 
-const ME = gql`
-  query me {
-    user(login: "iteachonudemy") {
-      name
-      avatarUrl
-    }
-  }
-`;
+const DEFAULT_STATE = {
+  first: 5,
+  after:null,
+  last: null,
+  before: null,
+  query: "フロントエンドエンジニア"
+};
 
 function App() {
+  const [variables, setVariables] = useState(DEFAULT_STATE);
+  const { query, first, last, before, after } = variables;
+  console.log({query})
+  function handleChange(input) {
+    setVariables({
+      ...DEFAULT_STATE,
+      query: input.target.value
+    });
+  }
   return (
     <ApolloProvider client={client}>
-      <div>Hello, GraphQL</div>
-      <Query query={ME}>
+      <form>
+        <input value={query} onChange={handleChange}></input>
+      </form>
+      <Query
+        query={SEARCH_REPOSITORIES}
+        variables={{ query, first, last, before, after }}
+      >
         {
           ({ loading, error, data }) => {
             if (loading) return 'Loading ...';
-            if (error) return `Error! ${error.message}`
+            if (error) return `Error! ${error.message}`;
 
-          return <div>{data.user.name}</div>
+            console.log({data});
+            return <div></div>
           }
         }
       </Query>
