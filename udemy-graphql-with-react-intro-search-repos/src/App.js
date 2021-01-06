@@ -26,7 +26,20 @@ function App() {
   function goNext(search) {
     setVariables({
       ...variables,
+      first: PER_PAGE,
       after: search.pageInfo.endCursor,
+      last: null,
+      before: null
+    });
+  }
+
+  function goPrevious(search) {
+    setVariables({
+      ...variables,
+      first: null,
+      after: null,
+      last: PER_PAGE,
+      before: search.pageInfo.startCursor
     });
   }
 
@@ -65,6 +78,16 @@ function App() {
                   }
                 </ul>
 
+                {
+                  search.pageInfo.hasPreviousPage === true ?
+                  <button
+                    onClick={() => goPrevious(search)}
+                  >
+                    Previous
+                  </button>
+                  :
+                  null
+                }
                 {
                   search.pageInfo.hasNextPage === true ?
                   <button
