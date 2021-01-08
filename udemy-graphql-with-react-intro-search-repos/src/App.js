@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ApolloProvider, Query } from 'react-apollo';
+import { ApolloProvider, Query, Mutation } from 'react-apollo';
 import client from './client';
-import { SEARCH_REPOSITORIES } from "./graphql";
+import { SEARCH_REPOSITORIES, ADD_STAR } from "./graphql";
 
 const PER_PAGE = 5;
 const DEFAULT_STATE = {
@@ -11,6 +11,37 @@ const DEFAULT_STATE = {
   before: null,
   query: "フロントエンドエンジニア"
 };
+
+const StarButton = props => {
+  const node = props.node;
+  const totalCount = node.stargazers.totalCount;
+  const unit = totalCount === 1 ? 'star' : 'stars';
+  const viewerHasStarred = node.viewerHasStarred;
+  const starText = `${totalCount} ${unit}`;
+  const StarStatus = ({addStar}) => {
+    return (
+      <button
+      onClick={
+        () => {
+          addStar({
+            variables: { input: { starrableId: node.id } }
+          })
+        }
+      }
+      >
+        {starText} | {viewerHasStarred ? 'starred' : '-'}
+      </button>
+    )
+  }
+
+  return (
+    <Mutation mutation={ADD_STAR}>
+      {
+        addStar => <StarStatus addStar={addStar}/>
+      }
+    </Mutation>
+  )
+}
 
 function App() {
   const [variables, setVariables] = useState(DEFAULT_STATE);
@@ -72,6 +103,8 @@ function App() {
                       return (
                         <li key={node.id}>
                           <a href={node.url} target="_blank" rel="noreferrer">{node.name}</a>
+                          &nbsp;
+                          <StarButton node={node}></StarButton>
                         </li>
                       )
                     })
